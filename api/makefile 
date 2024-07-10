@@ -1,0 +1,38 @@
+.PHONY: install start clean test help
+
+# Configuration
+VENV_NAME?=venv
+PYTHON=${VENV_NAME}/bin/python
+PIP=${VENV_NAME}/bin/pip
+
+# Default target executed when no arguments are given to make.
+default: start
+
+## Setup Python Virtual Environment including pip upgrade and dependency installation
+setup:
+	@echo "Creating virtual environment..."
+	python3 -m venv $(VENV_NAME)
+	@echo "Activating virtual environment..."
+	@. $(VENV_NAME)/bin/activate
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
+
+## Start the application with the development server from Flask
+start: setup
+	@echo "Starting Flask server..."
+	FLASK_APP=app.py FLASK_ENV=development $(PYTHON) -m flask run
+
+## Clean all files created by the build and/or tests
+clean:
+	@echo "Cleaning up..."
+	rm -rf $(VENV_token)
+	@echo "Removed virtual environment."
+
+## Run application tests using Python's built-in unittest discovery
+test:
+	@echo "Running tests..."
+	$(PYTHON) -m unittest discover
+
+## Show available commands by parsing Makefile comments
+help:
+	@grep '##' $(MAKEFILE_LIST) | sed 's/^.*##//'
